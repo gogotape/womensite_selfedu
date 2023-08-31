@@ -1,2 +1,3 @@
 .idea/
 djvenv/
+*__pycache__*
