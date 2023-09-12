@@ -6,6 +6,23 @@
 </head>
 <body>
 <p> {{ menu }}</p>
+<h1> {{ title.capfirst }}</h1>
+
+<ul>
+    {% for row in posts %}
+    {% if row.is_published %}
+    <li>
+        <h2>{{ row.title }}</h2>
+        <p>{{ row.content }}</p>
+        {% if not forloop.last%}
+        <hr>
+        {% endif %}
+    </li>
+    {% endif %}
+    {% endfor %}
+
+</ul>
+
 <p> {{ float|add:"100" }}</p>
 <p> {{ lst }}</p>
 <p> {{ set }}</p>

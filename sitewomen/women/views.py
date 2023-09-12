@@ -15,9 +15,17 @@ class MyClass:
         self.b = b
 
 
+data_db = [
+    {'id': 1, 'title': 'Джоли', 'content': 'Биография Джоли', 'is_published': True},
+    {'id': 2, 'title': 'Робби', 'content': 'Биография Робби', 'is_published': False},
+    {'id': 3, 'title': 'Роббертс', 'content': 'Биография Роббертс', 'is_published': True},
+    ]
+
+
 def index(request: HttpRequest) -> HttpResponse:
     data = {'title': 'главная страница',
             'menu': menu,
+            'posts': data_db,
             'float': 28.56,
             'lst': [1, 2, 'abcd', True],
             'set': {1, 2, 3, 4, 10, 555},
