@@ -6,7 +6,12 @@ from django.template.defaultfilters import slugify
 
 
 # Create your views here.
-menu = {"О сайте", "Добавить статью", "Обратная связь", "Войти"}
+menu = [
+    {'title': 'О сайте', 'url_name': 'about'},
+    {'title': 'Добавить статью', 'url_name': 'add_page'},
+    {'title': 'Обратная связь', 'url_name': 'contacts'},
+    {'title': 'Войти', 'url_name': 'login'},
+]
 
 
 class MyClass:
@@ -37,6 +42,14 @@ def index(request: HttpRequest) -> HttpResponse:
     return render(request, 'women/index.html', context=data)
 
 
+def posts(requests: HttpRequest, women_id: int) -> HttpResponse:
+    return HttpResponse(f"<h1> {women_id}, {filter(lambda x: x['id'] == women_id, data_db).__next__()} </h1>")
+
+
+def alter_posts(requests: HttpRequest, post_id: int) -> HttpResponse:
+    return HttpResponse(f"<h3> Отображение статьи c id:{post_id} </h3>")
+
+
 def about(request: HttpRequest) -> HttpResponse:
     return render(request, 'women/about.html')
 
@@ -59,3 +72,15 @@ def archive(request: HttpRequest, year: int) -> HttpResponse:
 
 def page_not_found(request: HttpRequest, exception):
     return HttpResponseNotFound("<h1>Страница не найдена</h1>")
+
+
+def addpage(request: HttpRequest) -> HttpResponse:
+    return HttpResponse("Добавление статьи")
+
+
+def contacts(request: HttpRequest) -> HttpResponse:
+    return HttpResponse("Обратная связь")
+
+
+def login(request: HttpRequest) -> HttpResponse:
+    return HttpResponse("Авторизация")
