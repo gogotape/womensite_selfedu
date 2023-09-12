@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
-    <title>{{ title }}</title>
+    <title>{{ title|upper }}</title>
 
 </head>
 <body>
 <p> {{ menu }}</p>
-<p> {{ float }}</p>
+<p> {{ float|add:"100" }}</p>
 <p> {{ lst }}</p>
 <p> {{ set }}</p>
 <p> {{ dict.key_1 }}</p>
 <p> {{ obj.a }}</p>
-<h1>{{ title }}</h1>
+<p> {{ url }}</p>
+<h1>{{ title|capfirst }}</h1>
 </body>
 </html>
