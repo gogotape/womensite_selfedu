@@ -5,10 +5,26 @@ from django.template.loader import render_to_string
 
 
 # Create your views here.
+menu = {"О сайте", "Добавить статью", "Обратная связь", "Войти"}
+
+
+class MyClass:
+    def __init__(self, a ,b):
+        self.a = a
+        self.b = b
 
 
 def index(request: HttpRequest) -> HttpResponse:
-    return render(request, 'women/index.html')
+    data = {'title': 'Главная страница',
+            'menu': menu,
+            'float': 28.56,
+            'lst': [1, 2, 'abcd', True],
+            'set': {1, 2, 3, 4, 10, 555},
+            'dict': {'key_1': 'value_1', 'key_2': 'value_2'},
+            'obj': MyClass(10, 20)
+            }
+
+    return render(request, 'women/index.html', context=data)
 
 
 def about(request: HttpRequest) -> HttpResponse:
