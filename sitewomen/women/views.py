@@ -2,6 +2,7 @@ from django.http import HttpRequest, HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render, redirect, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.urls import reverse
 from django.template.loader import render_to_string
+from django.template.defaultfilters import slugify
 
 
 # Create your views here.
@@ -15,13 +16,14 @@ class MyClass:
 
 
 def index(request: HttpRequest) -> HttpResponse:
-    data = {'title': 'Главная страница',
+    data = {'title': 'главная страница',
             'menu': menu,
             'float': 28.56,
             'lst': [1, 2, 'abcd', True],
             'set': {1, 2, 3, 4, 10, 555},
             'dict': {'key_1': 'value_1', 'key_2': 'value_2'},
-            'obj': MyClass(10, 20)
+            'obj': MyClass(10, 20),
+            'url': slugify("The Main page.")
             }
 
     return render(request, 'women/index.html', context=data)
