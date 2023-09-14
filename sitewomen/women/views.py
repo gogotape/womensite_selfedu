@@ -51,7 +51,7 @@ def alter_posts(requests: HttpRequest, post_id: int) -> HttpResponse:
 
 
 def about(request: HttpRequest) -> HttpResponse:
-    return render(request, 'women/about.html')
+    return render(request, 'women/about.html', {'title': "О сайте", 'menu': menu})
 
 
 def categories(request: HttpRequest, cat_id: int) -> HttpResponse:
