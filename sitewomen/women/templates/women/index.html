@@ -10,8 +10,9 @@
     {% if row.is_published %}
     <li>
         <h2>{{ row.title }}</h2>
-        <p>{{ row.content }}</p>
-
+        {% autoescape off %}
+        <p>{{ row.content|linebreaks|truncatewords:20 }}</p>
+        {% endautoescape %}
         <p><a href="posts/{{ row.id }}"> Читать пост </a></p>
         <p><a href="{% url 'alter_posts' row.id %}"> Читать альтернативный пост </a></p>
 
