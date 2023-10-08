@@ -17,4 +17,5 @@ urlpatterns = [
     path('addpage/', views.addpage, name='add_page'),
     path('contacts/', views.contacts, name='contacts'),
     path('login/', views.login, name='login'),
+    path('category/<int:cat_id>/', views.show_category, name='category'),
 ]
