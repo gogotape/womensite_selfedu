@@ -14,7 +14,7 @@
         <p>{{ row.content|linebreaks|truncatewords:20 }}</p>
         {% endautoescape %}
         <p><a href="posts/{{ row.id }}"> Читать пост </a></p>
-        <p><a href="{% url 'alter_posts' row.id %}"> Читать альтернативный пост </a></p>
+        <p><a href="{{ row.get_absolute_url }}"> Читать альтернативный пост </a></p>
 
         {% if not forloop.last%}
         <hr>

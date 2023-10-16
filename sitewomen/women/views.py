@@ -1,9 +1,10 @@
 from django.http import HttpRequest, HttpResponse, HttpResponseNotFound, Http404
-from django.shortcuts import render, redirect, HttpResponseRedirect, HttpResponsePermanentRedirect
+from django.shortcuts import render, redirect, HttpResponseRedirect, HttpResponsePermanentRedirect, get_object_or_404
 from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 
+from women.models import Women
 
 # Create your views here.
 menu = [
@@ -39,9 +40,12 @@ cats_db =  [
 
 
 def index(request: HttpRequest) -> HttpResponse:
+
+    posts = Women.objects.filter(is_published=1)
+
     data = {'title': 'главная страница',
             'menu': menu,
-            'posts': data_db,
+            'posts': posts,
             'float': 28.56,
             'lst': [1, 2, 'abcd', True],
             'set': {1, 2, 3, 4, 10, 555},
@@ -100,6 +104,18 @@ def show_category(request: HttpRequest, cat_id):
 
 def page_not_found(request: HttpRequest, exception):
     return HttpResponseNotFound("<h1>Страница не найдена</h1>")
+
+
+def show_post(request: HttpRequest, post_slug):
+    post = get_object_or_404(Women, slug=post_slug)
+    data = {
+        'title': post.title,
+        'menu': menu,
+        'post': post,
+        'cat_selected': 1
+    }
+
+    return render(request, 'women/post.html', data)
 
 
 def addpage(request: HttpRequest) -> HttpResponse:
