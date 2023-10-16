@@ -16,6 +16,7 @@ urlpatterns = [
     path('alter_posts/<int:post_id>/', views.alter_posts, name='alter_posts'),
     path('addpage/', views.addpage, name='add_page'),
     path('contacts/', views.contacts, name='contacts'),
+    path('post/<slug:post_slug>/', views.show_post, name='show_post'),
     path('login/', views.login, name='login'),
     path('category/<int:cat_id>/', views.show_category, name='category'),
 ]
