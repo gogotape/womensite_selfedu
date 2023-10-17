@@ -8,6 +8,11 @@ class PublishedManager(models.Manager):
         return super().get_queryset().filter(is_published=Women.Status.PUBLISHED)
 
 
+# types of relationships
+# ForeignKey: Many to One (Most of relationships)
+# ManyToManyField: Many to Many (Students and Teachers; intermediate table creating by django)
+# OneToOneField: One to One (Citizen and citizenship)
+
 class Women(models.Model):
 
     class Status(models.IntegerChoices):
