@@ -4,6 +4,11 @@ from django.urls import reverse
 
 # Create your models here.
 
+# types of relationships
+# ForeignKey: Many to One (Most of relationships)
+# ManyToManyField: Many to Many (Students and Teachers; intermediate table creating by django)
+# OneToOneField: One to One (Citizen and citizenship)
+
 class Women(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True, db_index=True)
