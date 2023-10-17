@@ -41,7 +41,7 @@ cats_db =  [
 
 def index(request: HttpRequest) -> HttpResponse:
 
-    posts = Women.objects.filter(is_published=1)
+    posts = Women.published.all()
 
     data = {'title': 'главная страница',
             'menu': menu,
