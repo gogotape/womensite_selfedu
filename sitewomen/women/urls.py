@@ -18,5 +18,5 @@ urlpatterns = [
     path('contacts/', views.contacts, name='contacts'),
     path('post/<slug:post_slug>/', views.show_post, name='show_post'),
     path('login/', views.login, name='login'),
-    path('category/<int:cat_id>/', views.show_category, name='category'),
+    path('category/<slug:cat_slug>/', views.show_category, name='category'),
 ]
