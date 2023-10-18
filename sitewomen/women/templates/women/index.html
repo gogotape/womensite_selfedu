@@ -7,8 +7,13 @@
 
 <ul>
     {% for row in posts %}
+
+
     {% if row.is_published %}
-    <li>
+            <li><div class="article-panel">
+        <p class="first">Категория: {{ row.cat.name }}</p>
+        <p class="last">Дата: {{ row.time_update|date:"d-m-Y H-i-s" }}</p>
+    </div>
         <h2>{{ row.title }}</h2>
         {% autoescape off %}
         <p>{{ row.content|linebreaks|truncatewords:20 }}</p>

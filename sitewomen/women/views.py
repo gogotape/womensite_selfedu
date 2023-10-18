@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 
-from women.models import Women
+from women.models import Women, Category
 
 # Create your views here.
 menu = [
@@ -31,12 +31,6 @@ data_db = [
     {'id': 2, 'title': 'Робби', 'content': 'Биография Робби', 'is_published': False},
     {'id': 3, 'title': 'Роббертс', 'content': 'Биография Роббертс', 'is_published': True},
     ]
-
-cats_db =  [
-    {'id': 1, 'name': 'Актрисы'},
-    {'id': 2, 'name': 'Певицы'},
-    {'id': 3, 'name': 'Спортсменки'},
-]
 
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -86,17 +80,19 @@ def archive(request: HttpRequest, year: int) -> HttpResponse:
     return HttpResponse(f"<h1>Архив по годам</h1><p>{year}</p>")
 
 
-def show_category(request: HttpRequest, cat_id):
-    data = {'title': 'главная страница',
+def show_category(request: HttpRequest, cat_slug):
+    category = get_object_or_404(Category, slug=cat_slug)
+    posts = Women.published.filter(cat_id=category)
+    data = {'title': f'Рубрика: {category.name}',
             'menu': menu,
-            'posts': data_db,
+            'posts': posts,
             'float': 28.56,
             'lst': [1, 2, 'abcd', True],
             'set': {1, 2, 3, 4, 10, 555},
             'dict': {'key_1': 'value_1', 'key_2': 'value_2'},
             'obj': MyClass(10, 20),
             'url': slugify("The Main page."),
-            'cat_selected': cat_id,
+            'cat_selected': category.pk,
             }
 
     return render(request, 'women/index.html', context=data)
