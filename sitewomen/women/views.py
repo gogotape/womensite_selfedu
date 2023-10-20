@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 
-from women.models import Women, Category
+from women.models import Women, Category, TagPost
 
 # Create your views here.
 menu = [
@@ -124,3 +124,17 @@ def contacts(request: HttpRequest) -> HttpResponse:
 
 def login(request: HttpRequest) -> HttpResponse:
     return HttpResponse("Авторизация")
+
+
+def show_tag_postlist(request: HttpRequest, tag_slug) -> HttpResponse:
+    tag = get_object_or_404(TagPost, slug=tag_slug)
+    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED)
+
+    data = {
+        'title': f"TAG: {tag.tag}",
+        'menu': menu,
+        'posts': posts,
+        'cat_selected': None,
+    }
+
+    return render(request, 'women/index.html', context=data)
