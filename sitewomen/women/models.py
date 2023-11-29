@@ -14,7 +14,6 @@ class PublishedManager(models.Manager):
 # OneToOneField: One to One (Citizen and citizenship)
 
 class Women(models.Model):
-
     class Status(models.IntegerChoices):
         DRAFT = 0, "Not published"
         PUBLISHED = 1, "Published"
@@ -70,6 +69,7 @@ class TagPost(models.Model):
 class Husband(models.Model):
     name = models.CharField(max_length=100)
     age = models.IntegerField(null=True)
+    wedding_count = models.IntegerField(blank=True, default=0)
 
     def __str__(self):
         return self.name
