@@ -1,3 +1,5 @@
 .idea/
 djvenv/
 **/__pycache__/
+*.pyc
+
