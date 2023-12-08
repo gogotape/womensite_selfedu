@@ -31,3 +31,7 @@ class AddPostForm(forms.ModelForm):
             "title": forms.TextInput(attrs={"class": "form-input"}),
             "content": forms.Textarea(attrs={"cols": 50, "rows": 5}),
         }
+
+
+class UploadFileForm(forms.Form):
+    file = forms.FileField(label="Файл")

@@ -5,7 +5,7 @@ from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 
 from women.models import Women, Category, TagPost
-from women.forms import AddPostForm
+from women.forms import AddPostForm, UploadFileForm
 
 # Create your views here.
 menu = [
@@ -48,8 +48,24 @@ def alter_posts(requests: HttpRequest, post_id: int) -> HttpResponse:
     return HttpResponse(f"<h3> Отображение статьи c id:{post_id} </h3>")
 
 
+def handle_upload_file(file):
+    with open(f"uploads/{file.name}", "+wb") as destination:
+        for chunk in file.chunks():
+            destination.write(chunk)
+
+
 def about(request: HttpRequest) -> HttpResponse:
-    return render(request, 'women/about.html', {'title': "О сайте", 'menu': menu})
+    if request.method == "POST":
+        # handle_upload_file(request.FILES["file_upload"])
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            handle_upload_file(form.cleaned_data["file"])
+    else:
+        form = UploadFileForm()
+    return render(request, 'women/about.html', {'title': "О сайте",
+                                                'menu': menu,
+                                                'form': form}
+                  )
 
 
 def categories(request: HttpRequest, cat_id: int) -> HttpResponse:
