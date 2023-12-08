@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+
+# py manage.py shell_plus --print-sql
+# py manage.py makemigrations
+# py manage.py migrate
+
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
