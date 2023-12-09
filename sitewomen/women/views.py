@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.views import View
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 
 from women.models import Women, Category, TagPost, UploadFile
 from women.forms import AddPostForm, UploadFileForm
@@ -24,19 +24,18 @@ class MyClass:
         self.b = b
 
 
-class WomenHomePage(TemplateView):
+class WomenHomePage(ListView):
+    # model = Women
+    # queryset = Women.published.all().select_related("cat")
+    context_object_name = "posts"
     template_name = 'women/index.html'
     extra_context = {'title': 'главная страница',
                      'menu': menu,
-                     'posts': Women.published.all().select_related("cat"),
-                     'float': 28.56,
-                     'lst': [1, 2, 'abcd', True],
-                     'set': {1, 2, 3, 4, 10, 555},
-                     'dict': {'key_1': 'value_1', 'key_2': 'value_2'},
-                     'obj': MyClass(10, 20),
-                     'url': slugify("The Main page."),
                      'cat_selected': 0,
                      }
+
+    def get_queryset(self):
+        return Women.published.all().select_related("cat")
 
 
 def posts(requests: HttpRequest, women_id: int) -> HttpResponse:
@@ -83,22 +82,21 @@ def archive(request: HttpRequest, year: int) -> HttpResponse:
     return HttpResponse(f"<h1>Архив по годам</h1><p>{year}</p>")
 
 
-def show_category(request: HttpRequest, cat_slug):
-    category = get_object_or_404(Category, slug=cat_slug)
-    posts = Women.published.filter(cat_id=category).select_related("cat")
-    data = {'title': f'Рубрика: {category.name}',
-            'menu': menu,
-            'posts': posts,
-            'float': 28.56,
-            'lst': [1, 2, 'abcd', True],
-            'set': {1, 2, 3, 4, 10, 555},
-            'dict': {'key_1': 'value_1', 'key_2': 'value_2'},
-            'obj': MyClass(10, 20),
-            'url': slugify("The Main page."),
-            'cat_selected': category.pk,
-            }
+class ShowCategory(ListView):
+    template_name = 'women/index.html'
+    context_object_name = "posts"
+    allow_empty = False
 
-    return render(request, 'women/index.html', context=data)
+    def get_queryset(self):
+        return Women.published.filter(cat__slug=self.kwargs["cat_slug"]).select_related("cat")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cat = context["posts"][0].cat
+        context["title"] = "Категория - " + cat.name
+        context["menu"] = menu
+        context["cat_selected"] = cat.pk
+        return context
 
 
 def page_not_found(request: HttpRequest, exception):
