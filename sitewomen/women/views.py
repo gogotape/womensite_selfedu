@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect, HttpResponseRedirect, HttpRespons
 from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
+from django.views import View
+from django.views.generic import TemplateView
 
 from women.models import Women, Category, TagPost, UploadFile
 from women.forms import AddPostForm, UploadFileForm
@@ -22,22 +24,19 @@ class MyClass:
         self.b = b
 
 
-def index(request: HttpRequest) -> HttpResponse:
-    posts = Women.published.all().select_related("cat")
-
-    data = {'title': 'главная страница',
-            'menu': menu,
-            'posts': posts,
-            'float': 28.56,
-            'lst': [1, 2, 'abcd', True],
-            'set': {1, 2, 3, 4, 10, 555},
-            'dict': {'key_1': 'value_1', 'key_2': 'value_2'},
-            'obj': MyClass(10, 20),
-            'url': slugify("The Main page."),
-            'cat_selected': 0,
-            }
-
-    return render(request, 'women/index.html', context=data)
+class WomenHomePage(TemplateView):
+    template_name = 'women/index.html'
+    extra_context = {'title': 'главная страница',
+                     'menu': menu,
+                     'posts': Women.published.all().select_related("cat"),
+                     'float': 28.56,
+                     'lst': [1, 2, 'abcd', True],
+                     'set': {1, 2, 3, 4, 10, 555},
+                     'dict': {'key_1': 'value_1', 'key_2': 'value_2'},
+                     'obj': MyClass(10, 20),
+                     'url': slugify("The Main page."),
+                     'cat_selected': 0,
+                     }
 
 
 def posts(requests: HttpRequest, women_id: int) -> HttpResponse:
@@ -118,23 +117,22 @@ def show_post(request: HttpRequest, post_slug):
     return render(request, 'women/post.html', data)
 
 
-def addpage(request: HttpRequest) -> HttpResponse:
-    if request.method == "POST":
+class AddPage(View):
+    def get(self, request):
+        form = AddPostForm()
+        data = {
+            "menu": menu,
+            "title": "Добавление статьи",
+            "form": form,
+        }
 
+        return render(request, 'women/addpage.html', data)
+
+    def post(self, request):
         form = AddPostForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect("home")
-    else:
-        form = AddPostForm()
-
-    data = {
-        "menu": menu,
-        "title": "Добавление статьи",
-        "form": form,
-    }
-
-    return render(request, 'women/addpage.html', data)
 
 
 def contacts(request: HttpRequest) -> HttpResponse:
