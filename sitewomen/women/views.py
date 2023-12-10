@@ -1,10 +1,10 @@
 from django.http import HttpRequest, HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render, redirect, HttpResponseRedirect, HttpResponsePermanentRedirect, get_object_or_404
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.views import View
-from django.views.generic import TemplateView, ListView, DetailView
+from django.views.generic import TemplateView, ListView, DetailView, FormView
 
 from women.models import Women, Category, TagPost, UploadFile
 from women.forms import AddPostForm, UploadFileForm
@@ -132,22 +132,19 @@ class ShowPost(DetailView):
         return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
 
 
-class AddPage(View):
-    def get(self, request):
-        form = AddPostForm()
-        data = {
-            "menu": menu,
-            "title": "Добавление статьи",
-            "form": form,
-        }
+class AddPage(FormView):
+    form_class = AddPostForm
+    template_name = 'women/addpage.html'
+    success_url = reverse_lazy("home")
 
-        return render(request, 'women/addpage.html', data)
+    extra_context = {
+        "title": "Добавление статьи",
+        "menu": menu,
+    }
 
-    def post(self, request):
-        form = AddPostForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect("home")
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
 
 
 def contacts(request: HttpRequest) -> HttpResponse:
