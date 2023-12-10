@@ -19,4 +19,6 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('category/<slug:cat_slug>/', ShowCategory.as_view(), name='category'),
     path('tag/<slug:tag_slug>/', ShowTag.as_view(), name='tag'),
+    path('edit/<int:pk>', views.UpdatePage.as_view(), name='edit_page')
+
 ]
