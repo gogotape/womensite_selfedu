@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.views import View
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView, ListView, DetailView
 
 from women.models import Women, Category, TagPost, UploadFile
 from women.forms import AddPostForm, UploadFileForm
@@ -115,6 +115,23 @@ def show_post(request: HttpRequest, post_slug):
     return render(request, 'women/post.html', data)
 
 
+class ShowPost(DetailView):
+    model = Women
+    template_name = 'women/post.html'
+    allow_empty = False
+    slug_url_kwarg = "post_slug"
+    context_object_name = "post"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = context["post"].title
+        context["menu"] = menu
+        return context
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
+
+
 class AddPage(View):
     def get(self, request):
         form = AddPostForm()
@@ -141,15 +158,18 @@ def login(request: HttpRequest) -> HttpResponse:
     return HttpResponse("Авторизация")
 
 
-def show_tag_postlist(request: HttpRequest, tag_slug) -> HttpResponse:
-    tag = get_object_or_404(TagPost, slug=tag_slug)
-    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED).select_related("cat")
+class ShowTag(ListView):
+    template_name = 'women/index.html'
+    context_object_name = "posts"
+    allow_empty = False
 
-    data = {
-        'title': f"TAG: {tag.tag}",
-        'menu': menu,
-        'posts': posts,
-        'cat_selected': None,
-    }
+    def get_queryset(self):
+        return Women.published.filter(tags__slug=self.kwargs["tag_slug"]).select_related("cat")
 
-    return render(request, 'women/index.html', context=data)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tag = TagPost.objects.get(slug=self.kwargs["tag_slug"])
+        context["title"] = "Тег - " + tag.tag
+        context["menu"] = menu
+        context["cat_selected"] = None
+        return context
