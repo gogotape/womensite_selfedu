@@ -8,31 +8,22 @@ from django.views.generic import TemplateView, ListView, DetailView, FormView, C
 
 from women.models import Women, Category, TagPost, UploadFile
 from women.forms import AddPostForm, UploadFileForm
+from women.utils import DataMixin
+
 
 # Create your views here.
-menu = [
-    {'title': 'О сайте', 'url_name': 'about'},
-    {'title': 'Добавить статью', 'url_name': 'add_page'},
-    {'title': 'Обратная связь', 'url_name': 'contacts'},
-    {'title': 'Войти', 'url_name': 'login'},
-]
-
-
 class MyClass:
     def __init__(self, a, b):
         self.a = a
         self.b = b
 
 
-class WomenHomePage(ListView):
-    # model = Women
+class WomenHomePage(DataMixin, ListView):
     # queryset = Women.published.all().select_related("cat")
     context_object_name = "posts"
     template_name = 'women/index.html'
-    extra_context = {'title': 'главная страница',
-                     'menu': menu,
-                     'cat_selected': 0,
-                     }
+    title_page = "Главная страница"
+    cat_selected = 0
 
     def get_queryset(self):
         return Women.published.all().select_related("cat")
@@ -44,12 +35,6 @@ def posts(requests: HttpRequest, women_id: int) -> HttpResponse:
 
 def alter_posts(requests: HttpRequest, post_id: int) -> HttpResponse:
     return HttpResponse(f"<h3> Отображение статьи c id:{post_id} </h3>")
-
-
-# def handle_upload_file(file):
-#     with open(f"uploads/{file.name}", "+wb") as destination:
-#         for chunk in file.chunks():
-#             destination.write(chunk)
 
 
 def about(request: HttpRequest) -> HttpResponse:
@@ -82,7 +67,7 @@ def archive(request: HttpRequest, year: int) -> HttpResponse:
     return HttpResponse(f"<h1>Архив по годам</h1><p>{year}</p>")
 
 
-class ShowCategory(ListView):
+class ShowCategory(DataMixin, ListView):
     template_name = 'women/index.html'
     context_object_name = "posts"
     allow_empty = False
@@ -93,29 +78,17 @@ class ShowCategory(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         cat = context["posts"][0].cat
-        context["title"] = "Категория - " + cat.name
-        context["menu"] = menu
-        context["cat_selected"] = cat.pk
-        return context
+        return self.get_mixin_context(context=context,
+                                      title="Категория - " + cat.name,
+                                      cat_selected=cat.pk
+                                      )
 
 
 def page_not_found(request: HttpRequest, exception):
     return HttpResponseNotFound("<h1>Страница не найдена</h1>")
 
 
-def show_post(request: HttpRequest, post_slug):
-    post = get_object_or_404(Women, slug=post_slug)
-    data = {
-        'title': post.title,
-        'menu': menu,
-        'post': post,
-        'cat_selected': 1
-    }
-
-    return render(request, 'women/post.html', data)
-
-
-class ShowPost(DetailView):
+class ShowPost(DataMixin, DetailView):
     model = Women
     template_name = 'women/post.html'
     allow_empty = False
@@ -124,36 +97,25 @@ class ShowPost(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = context["post"].title
-        context["menu"] = menu
-        return context
+        return self.get_mixin_context(context=context, title=context['post'].title)
 
     def get_object(self, queryset=None):
         return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
 
 
-class AddPage(CreateView):
-    model = Women
-    fields = ("title", "slug", "content", "is_published", "cat")
+class AddPage(DataMixin, CreateView):
+    form_class = AddPostForm
+    # fields = ("title", "slug", "content", "is_published", "cat")
     template_name = 'women/addpage.html'
-    # success_url = reverse_lazy("home")
-
-    extra_context = {
-        "title": "Добавление статьи",
-        "menu": menu,
-    }
+    title_page = "Добавление статьи"
 
 
-class UpdatePage(UpdateView):
+class UpdatePage(DataMixin, UpdateView):
     model = Women
     fields = ("title", "content", "photo", "is_published", "cat")
     template_name = 'women/addpage.html'
     success_url = reverse_lazy("home")
-
-    extra_context = {
-        "title": "Редактирование статьи",
-        "menu": menu,
-    }
+    title_page = "Редактирование статьи"
 
 
 def contacts(request: HttpRequest) -> HttpResponse:
@@ -164,7 +126,7 @@ def login(request: HttpRequest) -> HttpResponse:
     return HttpResponse("Авторизация")
 
 
-class ShowTag(ListView):
+class ShowTag(DataMixin, ListView):
     template_name = 'women/index.html'
     context_object_name = "posts"
     allow_empty = False
@@ -175,7 +137,6 @@ class ShowTag(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         tag = TagPost.objects.get(slug=self.kwargs["tag_slug"])
-        context["title"] = "Тег - " + tag.tag
-        context["menu"] = menu
-        context["cat_selected"] = None
-        return context
+        return self.get_mixin_context(context=context,
+                                      title="Тег - " + tag.tag
+                                      )
