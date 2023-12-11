@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django.http import HttpRequest, HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import render, redirect, HttpResponseRedirect, HttpResponsePermanentRedirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
@@ -38,16 +39,14 @@ def alter_posts(requests: HttpRequest, post_id: int) -> HttpResponse:
 
 
 def about(request: HttpRequest) -> HttpResponse:
-    if request.method == "POST":
-        # handle_upload_file(request.FILES["file_upload"])
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            UploadFile(file=form.cleaned_data["file"]).save()
-    else:
-        form = UploadFileForm()
+    contacts_list = Women.published.all()
+    paginator = Paginator(contacts_list, 3)
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
     return render(request, 'women/about.html', {'title': "О сайте",
-                                                'menu': menu,
-                                                'form': form}
+                                                'page_obj': page_obj
+                                                }
                   )
 
 
