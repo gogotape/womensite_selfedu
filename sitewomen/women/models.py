@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.urls import reverse
@@ -37,6 +38,9 @@ class Women(models.Model):
     cat = models.ForeignKey(to="Category", on_delete=models.PROTECT, related_name="posts")
     tags = models.ManyToManyField(to="TagPost", blank=True, related_name="tags")
     husband = models.OneToOneField("Husband", on_delete=models.SET_NULL, null=True, blank=True, related_name="woman")
+
+    author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, default=None, null=True,
+                               related_name="posts")
 
     objects = models.Manager()
     published = PublishedManager()
