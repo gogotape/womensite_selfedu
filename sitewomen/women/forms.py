@@ -20,13 +20,12 @@ class RussianValidator:
 
 
 class AddPostForm(forms.ModelForm):
-
     cat = forms.ModelChoiceField(queryset=Category.objects.all(), label="Категория", empty_label="Не выбрано")
     husband = forms.ModelChoiceField(queryset=Husband.objects.all(), label="Муж", required=False)
 
     class Meta:
         model = Women
-        fields = "__all__"
+        exclude = ("author",)
         widgets = {
             "title": forms.TextInput(attrs={"class": "form-input"}),
             "content": forms.Textarea(attrs={"cols": 50, "rows": 5}),
