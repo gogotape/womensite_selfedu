@@ -1,3 +1,5 @@
+import datetime
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, PasswordChangeForm
@@ -52,9 +54,12 @@ class UserProfileForm(forms.ModelForm):
     username = forms.CharField(disabled=True, label="Логин", widget=forms.TextInput(attrs={'class': 'form-input'}))
     email = forms.CharField(disabled=True, label="E-mail", widget=forms.TextInput(attrs={'class': 'form-input'}))
 
+    curr_year = datetime.datetime.now().year
+    date_birth = forms.DateField(widget=forms.SelectDateWidget(years=tuple(range(curr_year - 100, curr_year - 5))))
+
     class Meta:
         model = get_user_model()
-        fields = ["username", "email", "first_name", "last_name"]
+        fields = ["photo", "username", "email", "date_birth", "first_name", "last_name"]
         labels = {
             "first_name": "Имя",
             "last_name": "Фамилия",
