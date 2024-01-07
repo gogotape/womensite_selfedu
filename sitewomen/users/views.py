@@ -36,8 +36,6 @@ class UserProfile(LoginRequiredMixin, UpdateView):
     extra_context = {'title': 'Профиль пользователя',
                      "default_image": settings.DEFAULT_USER_IMAGE, }
 
-    print(extra_context)
-
     def get_success_url(self):
         return reverse_lazy('users:profile')
 
